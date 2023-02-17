@@ -1,0 +1,31 @@
+.form-view  {
+   width: 60%;
+}
+
+#add-form {
+
+}
+
+.text-input2 {
+    padding: 12px 20px;
+    margin: 1px 5px 15px 5px;
+    box-sizing: border-box;
+    font-size: 20px;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    border-radius: 8px;
+    border-style: none;
+}
+
+.text-label {
+    margin: 10px 5px 2px 5px;
+}
+
+.select-input {
+    padding: 12px 20px;
+    margin: 1px 5px 15px 5px;
+    box-sizing: border-box;
+    font-size: 20px;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    border-radius: 8px;
+    border-style: none;
+}

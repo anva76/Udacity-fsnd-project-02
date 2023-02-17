@@ -1,0 +1,77 @@
+.quiz-play-holder {
+    width: 80%;
+    margin-left: 10%;
+    text-align: center;
+    margin-top: 40px;
+    padding: 40px 10px;
+}
+
+.category-holder {
+    margin-top: 16px;
+    font-size: 24px;
+
+}
+
+.choose-header {
+    font-size: 34px;
+    font-weight: bold;
+}
+
+.play-category {
+    cursor: pointer;
+    padding: 10px;
+}
+
+.play-category:hover {
+    /*color: dodgerblue;*/
+    color: #EA4C89;
+}
+
+.button {
+    background-color: #EA4C89;
+    border-radius: 8px;
+    border-style: none;
+    box-sizing: border-box;
+    width: 200px;
+    margin-top: 15px;
+    /*background-color: dodgerblue;*/
+    color: white;
+    padding: 8px 10px;
+    align-self: center;
+    text-align: center;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.button:hover,
+.button:focus {
+    background-color: #F082AC;
+}
+
+.text-input {
+    padding: 12px 20px;
+    margin: 20px 0;
+    box-sizing: border-box;
+    font-size: 20px;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    border-radius: 8px;
+    border-style: none;
+}
+
+div.button {
+    margin-top: 20px;
+    margin-left: calc(50% - 50px);
+}
+
+.quiz-question  {
+    margin: 12px;
+    font-size: 24px;
+}
+
+.correct {
+    color: green;
+}
+
+.wrong {
+    color: red;
+}
