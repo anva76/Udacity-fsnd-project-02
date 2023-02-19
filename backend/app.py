@@ -28,11 +28,12 @@ def paginator(request, selection):
 	start = (page - 1) * ITEMS_PER_PAGE
 	end = start + ITEMS_PER_PAGE
 	
+	rows = [i.format() for i in selection]
 	if start > len(selection) - 1:
-		return None
+		# return the first page if the page number is out of range
+		return rows[0:ITEMS_PER_PAGE], 1
 	else:
-		rows = [i.format() for i in selection]
-		return rows[start:end]
+		return rows[start:end], page
 
 @app.after_request
 def after_request(response):
@@ -75,10 +76,7 @@ def get_questions_by_category(category_id):
 @app.route('/questions', methods=['GET'])
 def get_questions_paginated():
 	questions = Question.query.all()
-	questions_by_page = paginator(request, questions)
-
-	if questions_by_page is None:
-		abort(404)
+	questions_by_page, actual_page = paginator(request, questions)
 
 	categories = Category.query.all()
 
@@ -88,6 +86,7 @@ def get_questions_paginated():
 		'total_questions': len(questions),
 		'categories': {	c.id: c.type for c in categories },
 		'current_category': '',
+		'actual_page': actual_page,
 	}
 
 	return jsonify(data)
@@ -198,12 +197,32 @@ def search_questions(request):
 	
 	return jsonify(data)
 
+
+# Validate quiz data
+# ---------------------------------------------------------------------
+def validate_quiz_data(request):
+	data = request.get_json()
+	category_id = data['quiz_category']['id']
+	previous_questions = data['previous_questions']
+	
+	# Assert integer values
+	try:
+		category_id = int(category_id)
+		previous_questions_int = [int(q) for q in previous_questions]
+	except ValueError:
+		return False, None, None
+	
+	return True, category_id, previous_questions_int
+
+
 # Get the next question
 # ---------------------------------------------------------------------
 @app.route('/quizzes', methods=['POST'])
 def get_next_question():
-	category_id = request.get_json()['quiz_category']['id']
-	previous_questions = request.get_json()['previous_questions']
+	result, category_id, previous_questions = validate_quiz_data(request)
+	if not result:
+		abort(400)
+
 	print(category_id, previous_questions)
 	
 	category = Category.query.filter(Category.id == category_id).one_or_none()

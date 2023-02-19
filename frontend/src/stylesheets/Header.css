@@ -1,0 +1,11 @@
+.nav-bar-item {
+  cursor: pointer;
+}
+
+.nav-bar-item:hover {
+  color: #EA4C89;
+}
+
+.brand-nav-bar-item {
+  cursor: pointer;
+}

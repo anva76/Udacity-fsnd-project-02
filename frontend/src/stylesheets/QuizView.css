@@ -17,6 +17,21 @@
     font-weight: bold;
 }
 
+.final-header {
+    font-size: 24px;
+    margin-bottom: 8px;
+}
+
+.quiz-answer {
+    font-size: 20px;
+    margin-bottom: 8px;
+}
+
+.eval-message {
+    font-size: 20px;
+    margin-bottom: 8px;
+}
+
 .play-category {
     cursor: pointer;
     padding: 10px;
@@ -48,7 +63,7 @@
     background-color: #F082AC;
 }
 
-.text-input {
+.text-input-quiz {
     padding: 12px 20px;
     margin: 20px 0;
     box-sizing: border-box;

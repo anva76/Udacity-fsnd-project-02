@@ -10,6 +10,7 @@ class Header extends Component {
     return (
       <div className='App-header'>
         <h1
+          className='brand-nav-bar-item'
           onClick={() => {
             this.navTo('');
           }}
@@ -17,6 +18,7 @@ class Header extends Component {
           Udacitrivia
         </h1>
         <h2
+          className='nav-bar-item'
           onClick={() => {
             this.navTo('');
           }}
@@ -24,6 +26,7 @@ class Header extends Component {
           List
         </h2>
         <h2
+          className='nav-bar-item'
           onClick={() => {
             this.navTo('/add');
           }}
@@ -31,6 +34,7 @@ class Header extends Component {
           Add
         </h2>
         <h2
+          className='nav-bar-item'
           onClick={() => {
             this.navTo('/play');
           }}

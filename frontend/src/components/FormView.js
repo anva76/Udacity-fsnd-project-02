@@ -14,6 +14,10 @@ class FormView extends Component {
     };
   }
 
+  navTo(uri) {
+    window.location.href = window.location.origin + uri;
+  }
+
   componentDidMount() {
     $.ajax({
       url: `/categories`, //TODO: update request URL
@@ -48,6 +52,7 @@ class FormView extends Component {
       crossDomain: true,
       success: (result) => {
         document.getElementById('add-question-form').reset();
+        this.navTo('/')
         return;
       },
       error: (error) => {
@@ -71,10 +76,10 @@ class FormView extends Component {
           onSubmit={this.submitQuestion}
         >
           <label className='text-label'>Question</label>
-          <input className='text-input2' type='text' name='question' onChange={this.handleChange} />
+          <input className='text-input-form' type='text' name='question' onChange={this.handleChange} />
 
           <label className='text-label'>Answer</label>
-          <input className='text-input2' type='text' name='answer' onChange={this.handleChange} />
+          <input className='text-input-form' type='text' name='answer' onChange={this.handleChange} />
 
           <label className='text-label'>Difficulty</label>
           <select className='select-input' name='difficulty' onChange={this.handleChange}>

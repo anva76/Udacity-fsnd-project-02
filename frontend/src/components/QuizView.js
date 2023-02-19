@@ -157,7 +157,7 @@ class QuizView extends Component {
         <div className='quiz-question'>
           {this.state.currentQuestion.question}
         </div>
-        <div className={`${evaluate ? 'correct' : 'wrong'}`}>
+        <div className={`${evaluate ? 'correct eval-message' : 'wrong eval-message'}`}>
           {evaluate ? 'You were correct!' : 'You were incorrect'}
         </div>
         <div className='quiz-answer'>{this.state.currentQuestion.answer}</div>
@@ -180,7 +180,7 @@ class QuizView extends Component {
           {this.state.currentQuestion.question}
         </div>
         <form onSubmit={this.submitGuess}>
-          <input className='text-input' type='text' name='guess' onChange={this.handleChange} />
+          <input className='text-input-quiz' type='text' name='guess' onChange={this.handleChange} />
           <input
             className='submit-guess button'
             type='submit'

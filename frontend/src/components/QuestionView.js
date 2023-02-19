@@ -30,6 +30,7 @@ class QuestionView extends Component {
           totalQuestions: result.total_questions,
           categories: result.categories,
           currentCategory: result.current_category,
+          page:result.actual_page,
         });
         return;
       },
@@ -131,6 +132,7 @@ class QuestionView extends Component {
       <div className='question-view'>
         <div className='categories-list'>
           <h2
+            className='category-header'
             onClick={() => {
               this.getQuestions();
             }}
@@ -140,7 +142,7 @@ class QuestionView extends Component {
           <ul className='category-ul'>
             {Object.keys(this.state.categories).map((id) => (
               <li
-                className='category-item'
+                className={`category-item ${this.state.categories[id] === this.state.currentCategory ? 'selected' : ''}`}
                 key={id}
                 onClick={() => {
                   this.getByCategory(id);

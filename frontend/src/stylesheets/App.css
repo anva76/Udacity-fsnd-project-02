@@ -21,12 +21,6 @@ h2 {
   text-align: center;
 }
 
-ul {
-  list-style-type: none;
-  padding-inline-start: 0px;
-
-}
-
 form {
   display: flex;
   flex-direction: column;
