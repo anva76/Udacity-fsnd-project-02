@@ -3,6 +3,9 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
+def create_tables():
+    db.create_all()
+
 
 class Category(db.Model):
     __tablename__ = 'categories'
@@ -19,6 +22,10 @@ class Category(db.Model):
             'type': self.type
             }
     
+    def insert(self):
+        db.session.add(self)
+        db.session.commit()
+
 
 class Question(db.Model):
     __tablename__ = 'questions'

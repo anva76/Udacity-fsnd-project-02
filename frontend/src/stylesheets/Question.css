@@ -88,6 +88,7 @@
 }
 
 span.page-num {
+  cursor: pointer;
   margin: 5px;
   padding-bottom: 50px;
   /* color: blue; */
@@ -104,10 +105,12 @@ img.category {
   width: 30px;
   margin-right: 8px;
   vertical-align: middle;
+  margin-left: 2px;
 }
 
 img.delete {
   width: 20px;
+  cursor: pointer;
 }
 
 .search-input {

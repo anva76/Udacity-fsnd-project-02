@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request, abort
-from models import db, Category, Question
+from models import db, Category, Question, create_tables
 from flask_cors import CORS
 import random
 #from flask_migrate import Migrate
@@ -9,7 +9,10 @@ ITEMS_PER_PAGE = 10
 app = Flask(__name__)
 app.config.from_object('config')
 db.init_app(app)
-#migrate = Migrate(app, db)
+
+with app.app_context():
+	create_tables()
+
 #CORS(app)
 CORS(app, resources={r'/api/*' : {'origins': '*'}})
 
@@ -59,7 +62,10 @@ def get_categories():
 # ---------------------------------------------------------------------
 @app.route('/categories/<int:category_id>/questions', methods=['GET'])
 def get_questions_by_category(category_id):
-	category = Category.query.get_or_404(category_id)
+	category = db.session.get(Category, category_id)
+	if category is None:
+		abort(404)
+
 	questions = Question.query.filter(Question.category == category.id).all()
 
 	data = {
@@ -96,7 +102,9 @@ def get_questions_paginated():
 @app.route('/questions/<int:question_id>', methods=['DELETE'])
 def delete_question(question_id):
 	error = False
-	question = Question.query.get_or_404(question_id)
+	question = db.session.get(Question, question_id)
+	if question is None:
+		abort(404)
 	
 	try:
 		question.delete()
@@ -118,7 +126,7 @@ def delete_question(question_id):
 # ---------------------------------------------------------------------
 def validate_question_data(request):
 	body = request.get_json()
-	print(body)
+	#print(body)
 
 	question = body.get('question', None)
 	answer = body.get('answer', None)
@@ -167,6 +175,7 @@ def add_question(request):
 		question = Question()
 		question.populate_from_dict(question_data)
 		question.insert()
+		question_id = question.id
 	except:
 		error = True
 		db.session.rollback()
@@ -178,7 +187,8 @@ def add_question(request):
 		return error_response(f'Server error. New question could not be created.', 500) 
 	else:		
 		return jsonify ({
-			'succuess': True
+			'success': True,
+			'question_id': question_id,
 		})
 
 # Search questions
@@ -202,18 +212,28 @@ def search_questions(request):
 # ---------------------------------------------------------------------
 def validate_quiz_data(request):
 	data = request.get_json()
-	category_id = data['quiz_category']['id']
-	previous_questions = data['previous_questions']
+	#print(data)
+	category = data.get('quiz_category', None)
+	if category:
+		category_id = category['id']
+	else:
+		category_id = None
+
+	previous_questions = data.get('previous_questions', None)
 	
+	if previous_questions is None or category_id is None:
+		return False, None, None		
+
 	# Assert integer values
 	try:
-		category_id = int(category_id)
+		if category_id is not None:
+			category_id = int(category_id)
 		previous_questions_int = [int(q) for q in previous_questions]
+
 	except ValueError:
 		return False, None, None
 	
 	return True, category_id, previous_questions_int
-
 
 # Get the next question
 # ---------------------------------------------------------------------
@@ -223,23 +243,28 @@ def get_next_question():
 	if not result:
 		abort(400)
 
-	print(category_id, previous_questions)
-	
-	category = Category.query.filter(Category.id == category_id).one_or_none()
-	if category is None:
-		return error_response('Category not found', 404)	
-		
-	all_question_ids = [
-		q.id
-		for q in Question.query.filter(Question.category == category_id).all()
-	]
-	print(all_question_ids)
+	#print(category_id, previous_questions)
+	if category_id == 0:
+		all_question_ids = [
+			q.id
+			for q in Question.query.all()
+		]		
+	else:
+		category = Category.query.filter(Category.id == category_id).one_or_none()
+		if category is None:
+			return error_response('Category not found', 404)	
+			
+		all_question_ids = [
+			q.id
+			for q in Question.query.filter(Question.category == category_id).all()
+		]
+	#print(all_question_ids)
 		
 	if not set(previous_questions).issubset(all_question_ids):
 		return error_response('Invalid previous questions', 404)		
 		
 	next_question_pool = set(all_question_ids).difference(previous_questions)
-	print(next_question_pool)
+	#print(next_question_pool)
 
 	if len(next_question_pool) != 0:
 		question_id = random.choice(list(next_question_pool))
@@ -271,6 +296,6 @@ def bad_request(error):
 	}),400
 
 
-# Default port:
 if __name__ == '__main__':
-    app.run()
+	app.config['DEBUG'] = True
+	app.run()

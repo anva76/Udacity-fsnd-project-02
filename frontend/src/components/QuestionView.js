@@ -4,6 +4,8 @@ import Question from './Question';
 import Search from './Search';
 import $ from 'jquery';
 
+const QUESTIONS_PER_PAGE = 10
+
 class QuestionView extends Component {
   constructor() {
     super();
@@ -30,7 +32,7 @@ class QuestionView extends Component {
           totalQuestions: result.total_questions,
           categories: result.categories,
           currentCategory: result.current_category,
-          page:result.actual_page,
+          page: result.actual_page,
         });
         return;
       },
@@ -47,7 +49,7 @@ class QuestionView extends Component {
 
   createPagination() {
     let pageNumbers = [];
-    let maxPage = Math.ceil(this.state.totalQuestions / 10);
+    let maxPage = Math.ceil(this.state.totalQuestions / QUESTIONS_PER_PAGE);
     for (let i = 1; i <= maxPage; i++) {
       pageNumbers.push(
         <span
@@ -127,6 +129,20 @@ class QuestionView extends Component {
     }
   };
 
+  renderCategoryIcon = () => {
+    if (this.state.currentCategory) {
+      return (
+        <img
+          className='category'
+          alt={`${this.state.currentCategory.toLowerCase()}`}
+          src={`${this.state.currentCategory.toLowerCase()}.svg`}
+        />
+      )
+    } else {
+      return
+    }
+  }
+
   render() {
     return (
       <div className='question-view'>
@@ -148,7 +164,6 @@ class QuestionView extends Component {
                   this.getByCategory(id);
                 }}
               >
-
                 <img
                   className='category'
                   alt={`${this.state.categories[id].toLowerCase()}`}
@@ -161,7 +176,8 @@ class QuestionView extends Component {
           <Search submitSearch={this.submitSearch} />
         </div>
         <div className='questions-list'>
-          <h2>Questions</h2>
+          <h2>Questions {this.renderCategoryIcon()}</h2>
+
           {this.state.questions.map((q, ind) => (
             <Question
               key={q.id}
