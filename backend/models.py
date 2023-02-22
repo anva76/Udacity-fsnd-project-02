@@ -1,7 +1,7 @@
-#from sqlalchemy import Column, String, Integer
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
+
 
 def create_tables():
     db.create_all()
@@ -13,6 +13,12 @@ class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     type = db.Column(db.String)
 
+    questions = db.relationship(
+                'Question',
+                back_populates='category_type',
+                cascade='all,delete-orphan'
+            )
+
     def __init__(self, type):
         self.type = type
 
@@ -21,9 +27,13 @@ class Category(db.Model):
             'id': self.id,
             'type': self.type
             }
-    
+
     def insert(self):
         db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
         db.session.commit()
 
 
@@ -36,15 +46,23 @@ class Question(db.Model):
     difficulty = db.Column(db.Integer)
     category = db.Column(db.Integer, db.ForeignKey('categories.id'))
 
-    def __init__(self, question=None, answer=None, category=None, difficulty=None):
+    category_type = db.relationship('Category', back_populates='questions')
+
+    def __init__(
+                self,
+                question=None,
+                answer=None,
+                category=None,
+                difficulty=None
+            ):
         self.question = question
         self.answer = answer
         self.category = category
         self.difficulty = difficulty
-        
+
     def populate_from_dict(self, data):
-      for key, value in data.items():
-        setattr(self, key, value)    	
+        for key, value in data.items():
+            setattr(self, key, value)
 
     def insert(self):
         db.session.add(self)
@@ -64,8 +82,4 @@ class Question(db.Model):
             'answer': self.answer,
             'category': self.category,
             'difficulty': self.difficulty
-            }
-
-
-
-
+        }

@@ -13,17 +13,31 @@ class Question extends Component {
     this.setState({ visibleAnswer: !this.state.visibleAnswer });
   }
 
+  provideDefaultImgUrl(event) {
+    // if there is no svg file for some category, a default icon is provided
+    event.target.src = 'default.svg'
+  }
+
+  renderQuestionCategoryImg(category) {
+        // if category is null for any reason, a default icon is provided
+        return (
+          <img
+            onError={this.provideDefaultImgUrl}
+            className='category'
+            alt={category ? `${category.toLowerCase()}` : 'default icon'}
+            src={category ? `${category.toLowerCase()}.svg` : 'default.svg'}
+          />
+        ) 
+
+  }
+  
   render() {
     const { question, answer, category, difficulty } = this.props;
     return (
       <div className='Question-holder'>
         <div className='Question'>{question}</div>
         <div className='Question-status'>
-          <img
-            className='category'
-            alt={`${category.toLowerCase()}`}
-            src={`${category.toLowerCase()}.svg`}
-          />
+          {this.renderQuestionCategoryImg(category)}
           <div className='difficulty'>Difficulty: {difficulty}</div>
           <img
             src='delete.png'

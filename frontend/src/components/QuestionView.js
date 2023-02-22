@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import '../stylesheets/App.css';
 import Question from './Question';
 import Search from './Search';
+import AddCategory from './AddCategory';
 import $ from 'jquery';
 
 const QUESTIONS_PER_PAGE = 10
@@ -14,7 +15,8 @@ class QuestionView extends Component {
       page: 1,
       totalQuestions: 0,
       categories: {},
-      currentCategory: null,
+      currentCategory: '',
+      currentSearchTerm: null,
     };
   }
 
@@ -33,6 +35,7 @@ class QuestionView extends Component {
           categories: result.categories,
           currentCategory: result.current_category,
           page: result.actual_page,
+          currentSearchTerm: null,
         });
         return;
       },
@@ -75,6 +78,7 @@ class QuestionView extends Component {
           questions: result.questions,
           totalQuestions: result.total_questions,
           currentCategory: result.current_category,
+          currentSearchTerm: null,
         });
         return;
       },
@@ -101,6 +105,7 @@ class QuestionView extends Component {
           questions: result.questions,
           totalQuestions: result.total_questions,
           currentCategory: result.current_category,
+          currentSearchTerm: searchTerm,
         });
         return;
       },
@@ -118,7 +123,15 @@ class QuestionView extends Component {
           url: `/questions/${id}`, //TODO: update request URL
           type: 'DELETE',
           success: (result) => {
-            this.getQuestions();
+            if (this.state.currentCategory) {
+
+              const cat_id = Object.keys(this.state.categories)
+                          .find(key => this.state.categories[key] === this.state.currentCategory)
+              this.getByCategory(cat_id)
+              
+            } else {
+              this.getQuestions()
+            }
           },
           error: (error) => {
             alert('Unable to load questions. Please try your request again');
@@ -129,20 +142,57 @@ class QuestionView extends Component {
     }
   };
 
-  renderCategoryIcon = () => {
+  provideDefaultImgUrl(event) {
+    event.target.src = 'default.svg'
+  }
+
+  renderCategoryName = () => {
     if (this.state.currentCategory) {
       return (
-        <img
-          className='category'
-          alt={`${this.state.currentCategory.toLowerCase()}`}
-          src={`${this.state.currentCategory.toLowerCase()}.svg`}
-        />
+        <span className='header-highlight'>
+           | {this.state.currentCategory}
+        </span>
       )
+
+    } else if (this.state.currentSearchTerm) {
+      return (
+        <span className='header-highlight'>
+           | Search "{this.state.currentSearchTerm}"
+        </span>
+      ) 
+
     } else {
       return
     }
   }
 
+  submitNewCategory = (categoryType) => {
+      if (categoryType.trim().length === 0) return
+      
+      $.ajax({
+        url: '/categories', 
+        type: 'POST',
+        dataType: 'json',
+        contentType: 'application/json',
+        data: JSON.stringify({
+          category: categoryType,
+        }),
+        xhrFields: {
+          withCredentials: true,
+        },
+        crossDomain: true,
+        success: (result) => {
+          this.getQuestions()
+          return;
+        },
+        error: (error) => {
+          alert('Unable to add category. Please try your request again');
+          return;
+        },
+      })     
+
+  }
+  
   render() {
     return (
       <div className='question-view'>
@@ -150,11 +200,14 @@ class QuestionView extends Component {
           <h2
             className='category-header'
             onClick={() => {
-              this.getQuestions();
+              this.selectPage(1)
             }}
           >
             Categories
           </h2>
+
+          <AddCategory submitCategory={this.submitNewCategory}/>
+
           <ul className='category-ul'>
             {Object.keys(this.state.categories).map((id) => (
               <li
@@ -165,6 +218,7 @@ class QuestionView extends Component {
                 }}
               >
                 <img
+                  onError={this.provideDefaultImgUrl}
                   className='category'
                   alt={`${this.state.categories[id].toLowerCase()}`}
                   src={`${this.state.categories[id].toLowerCase()}.svg`}
@@ -173,10 +227,12 @@ class QuestionView extends Component {
               </li>
             ))}
           </ul>
+
           <Search submitSearch={this.submitSearch} />
+          
         </div>
         <div className='questions-list'>
-          <h2>Questions {this.renderCategoryIcon()}</h2>
+          <h2>Questions {this.renderCategoryName()}</h2>
 
           {this.state.questions.map((q, ind) => (
             <Question
@@ -188,7 +244,9 @@ class QuestionView extends Component {
               questionAction={this.questionAction(q.id)}
             />
           ))}
+
           <div className='pagination-menu'>{this.createPagination()}</div>
+
         </div>
       </div>
     );

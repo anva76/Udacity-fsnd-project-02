@@ -2,25 +2,31 @@
 
 ## Setting up the Backend
 
-### Install Dependencies
+### Prerequisites
 
-1. **Python 3.7** - Follow instructions to install the latest version of python for your platform in the [python docs](https://docs.python.org/3/using/unix.html#getting-and-installing-the-latest-version-of-python)
+* **Python 3.7 or higher** - Follow instructions to install the latest version of python for your platform in the [python docs](https://docs.python.org/3/using/unix.html#getting-and-installing-the-latest-version-of-python)
 
-2. **Virtual Environment** - We recommend working within a virtual environment whenever using Python for projects. This keeps your dependencies for each project separate and organized. Instructions for setting up a virual environment for your platform can be found in the [python docs](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/)
+* **Virtual Environment** - It is recommended to use a python virtual environment for running the backend Flask code. Instructions for setting up a virual environment for your platform can be found in the [python docs](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/)
 
-3. **PIP Dependencies** - Once your virtual environment is setup and running, install the required dependencies by navigating to the `/backend` directory and running:
+* **PostgreSQL Server** - For this project, a connection to a running PostgreSQL server is required. The simplest scenario is to run the seriver locally. Please refer to the [PostgreSQL administration docs](https://www.postgresql.org/docs/current/admin.html) and [install](https://www.postgresql.org/download/) a relevant binary package for your platform.
+
+### Installing PIP Dependencies
+
+In your terminal, navigate to the `/backend` directory and create a virtual environment by executing:
+
+```bash
+virtualenv venv
+```
+Then activate the newly created environment:
+
+```bash
+source venv/bin/activate
+```
+Install PIP dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
-
-#### Key Pip Dependencies
-
-- [Flask](http://flask.pocoo.org/) is a lightweight backend microservices framework. Flask is required to handle requests and responses.
-
-- [SQLAlchemy](https://www.sqlalchemy.org/) is the Python SQL toolkit and ORM we'll use to handle the lightweight SQL database. You'll primarily work in `app.py`and can reference `models.py`.
-
-- [Flask-CORS](https://flask-cors.readthedocs.io/en/latest/#) is the extension we'll use to handle cross-origin requests from our frontend server.
 
 ### Set up the Database
 
@@ -38,67 +44,250 @@ psql trivia < trivia.psql
 
 ### Run the Server
 
-From within the `./src` directory first ensure you are working using your created virtual environment.
+Before running the backend server, please ensure that you are in the `/backend` folder and your virtual environment is activated as described above.
 
-To run the server, execute:
+Change the `SQLALCHEMY_DATABASE_URI` parameter in the `config.py` file depending on your local PostreSQL configuration. To run the backend Flask server, execute:
 
 ```bash
-flask run --reload
+python app.py
 ```
 
-The `--reload` flag will detect file changes and restart the server automatically.
+## API documentation
 
-## To Do Tasks
+### API Endpoints
 
-These are the files you'd want to edit in the backend:
-
-1. `backend/flaskr/__init__.py`
-2. `backend/test_flaskr.py`
-
-One note before you delve into your tasks: for each endpoint, you are expected to define the endpoint and response data. The frontend will be a plentiful resource because it is set up to expect certain endpoints and response data formats already. You should feel free to specify endpoints in your own way; if you do so, make sure to update the frontend or you will get some unexpected behavior.
-
-1. Use Flask-CORS to enable cross-domain requests and set response headers.
-2. Create an endpoint to handle `GET` requests for questions, including pagination (every 10 questions). This endpoint should return a list of questions, number of total questions, current category, categories.
-3. Create an endpoint to handle `GET` requests for all available categories.
-4. Create an endpoint to `DELETE` a question using a question `ID`.
-5. Create an endpoint to `POST` a new question, which will require the question and answer text, category, and difficulty score.
-6. Create a `POST` endpoint to get questions based on category.
-7. Create a `POST` endpoint to get questions based on a search term. It should return any questions for whom the search term is a substring of the question.
-8. Create a `POST` endpoint to get questions to play the quiz. This endpoint should take a category and previous question parameters and return a random questions within the given category, if provided, and that is not one of the previous questions.
-9. Create error handlers for all expected errors including 400, 404, 422, and 500.
-
-## Documenting your Endpoints
-
-You will need to provide detailed documentation of your API endpoints including the URL, request parameters, and the response body. Use the example below as a reference.
-
-### Documentation Example
-
-`GET '/api/v1.0/categories'`
+`GET '/categories'`
 
 - Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category
 - Request Arguments: None
-- Returns: An object with a single key, `categories`, that contains an object of `id: category_string` key: value pairs.
+- Returns: An object with a single key, `categories`, that contains the dictionary of categories.
 
 ```json
 {
-  "1": "Science",
-  "2": "Art",
-  "3": "Geography",
-  "4": "History",
-  "5": "Entertainment",
-  "6": "Sports"
+    "categories": {
+        "1": "Science",
+        "2": "Art",
+        "3": "Geography",
+        "4": "History",
+        "5": "Entertainment",
+        "6": "Sports",
+        "7": "TV series",
+        "8": "Cinema"
+    },
+    "success": true
+}
+```
+
+`GET '/categories/<int:category_id>/questions'`
+
+- Fetches the list of questions for a given category.
+- Request Arguments: `category_id` - passed as a url paremeter.
+- Returns: a list of questions, current category, total number of questions.
+
+```json
+{
+    "current_category": "Science",
+    "questions": [
+        {
+            "answer": "The Liver",
+            "category": 1,
+            "difficulty": 4,
+            "id": 20,
+            "question": "What is the heaviest organ in the human body?"
+        },
+        {
+            "answer": "Alexander Fleming",
+            "category": 1,
+            "difficulty": 3,
+            "id": 21,
+            "question": "Who discovered penicillin?"
+        }
+    ],
+    "success": true,
+    "total_questions": 2
+}
+```
+`GET '/questions?page=<n>'`
+
+- Fetches the list of questions for a given page.
+- Request Arguments: `page` - passed as a url parameter
+- Returns: a list of questions, dictionary of categories, current category, total number of questions, actual page.
+The actual page parameter may be different from the requested page if it is out of range.
+
+
+```json
+{
+    "actual_page": 1,
+    "categories": {
+        "1": "Science",
+        "2": "Art",
+        "3": "Geography",
+        "4": "History",
+        "5": "Entertainment",
+        "6": "Sports"
+    },
+    "current_category": "",
+    "questions": [
+        {
+            "answer": "Apollo 13",
+            "category": 5,
+            "difficulty": 4,
+            "id": 2,
+            "question": "What movie earned Tom Hanks his third straight Oscar nomination, in 1996?"
+        },
+        {
+            "answer": "Tom Cruise",
+            "category": 5,
+            "difficulty": 4,
+            "id": 4,
+            "question": "What actor did author Anne Rice first denounce, then praise in the role of her beloved Lestat?"
+        },
+
+    ],
+    "success": true,
+    "total_questions": 21
+}
+```
+
+`DELETE '/questions/<int:question_id>'`
+
+- Sends a request to delete a question based on a question id number.
+- Request Arguments: `question_id` - passed as a url parameter
+- Returns: If the transaction is successful, only a success indicator is returned.
+
+```json
+{
+    "success": true
+}
+```
+
+`POST '/questions'`
+
+- Sends a request to add a new question.
+- Request Arguments: `question`, `answer`, `difficulty`, `category` - all passed in the body of a JSON request.
+
+```json
+{
+    "question":"Who was the singer in The Doors band?",
+    "answer":"Jim Morisson",
+    "difficulty": 2,
+    "category": 5
+}
+```
+- Returns: the question id of a newly created item.
+
+```json
+{
+    "question_id": 43,
+    "success": true
+}
+```
+
+`POST '/questions'`
+
+- Sends a request to search for a specific question by search term.
+- Request Arguments: `search_term` - passed in the body of a JSON request.
+
+```json
+{
+    "search_term":"Tom Hanks"
+}
+```
+- Returns: a list of questions matching the search criteria, total number of matching questions, current category.
+
+```json
+{
+    "questions": [
+        {
+            "answer": "Apollo 13",
+            "category": 5,
+            "difficulty": 4,
+            "id": 2,
+            "question": "What movie earned Tom Hanks his third straight Oscar nomination, in 1996?"
+        }
+    ],
+    "current_category": "",
+    "success": true,
+    "total_questions": 1
+}
+```
+
+`POST '/categories'`
+
+- Sends a request to add a new category.
+- Request Arguments: `category` - passed in the body of a JSON request.
+
+```json
+{
+    "category":"Cinema"
+}
+```
+- Returns:  the category id of a newly created item.
+
+```json
+{
+    "category_id": 8,
+    "success": true
+}
+```
+
+`DELETE '/categories/<int:category_id>'`
+
+- Sends a request to delete a category based on a category id.
+- Request Arguments: `category_id` - passed as a url parameter.
+- Returns: If the transaction is successful, only a success indicator is returned.
+
+```json
+{
+    "success": true
+}
+```
+
+`POST '/quizzes'`
+
+- Fetches the next random question taking into account a list of previous questions and current category.
+- Request Arguments: `quiz_category`, `previous_questions` - all passed in the body of a JSON request.
+If the category id is 0, the next question is chosen from all categories.
+
+```json
+{
+    "quiz_category":{"id":2,"type":"Art"},
+    "previous_questions":[16,18]
+}
+```
+- Returns: a dictionary with question details.
+
+```json
+{
+    "question": {
+        "answer": "Mona Lisa",
+        "category": 2,
+        "difficulty": 3,
+        "id": 17,
+        "question": "La Giaconda is better known as what?"
+    },
+    "success": true
+}
+```
+### Error handling
+If an API request is successful, a `success` indicator equal to `true` as well as an HTTP status code of 200 will be included in each server response. In case of an error, the success parameter will be equal to `false`. In addition, an error message and code will be provided.
+
+```json
+{
+    "error": 404,
+    "message": "Not found",
+    "success": false
 }
 ```
 
 ## Testing
 
-Write at least one test for the success and at least one error behavior of each endpoint using the unittest library.
-
-To deploy the tests, run
+In your terminal, navigate to the `/backend` folder and activate your virtual environment as described above.
+Then execute the following commands to perform testing:
 
 ```bash
 dropdb trivia_test
 createdb trivia_test
 psql trivia_test < trivia.psql
-python test_flaskr.py
+python test_app.py
 ```
