@@ -362,13 +362,13 @@ def get_next_question():
 
     if len(next_question_pool) != 0:
         question_id = random.choice(list(next_question_pool))
-        question = Question.query.filter(Question.id == question_id).one()
+        question = (Question.query.filter(Question.id == question_id).one()).format()
     else:
         question = None
 
     return jsonify({
         'success': True,
-        'question': question.format(),
+        'question': question,
     })
 
 
