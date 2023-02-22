@@ -283,7 +283,8 @@ If an API request is successful, a `success` indicator equal to `true` as well a
 ## Testing
 
 In your terminal, navigate to the `/backend` folder and activate your virtual environment as described above.
-Then execute the following commands to perform testing:
+
+Change the `SQLALCHEMY_DATABASE_URI` parameter in the `test_app.py` file depending on your local PostreSQL configuration. Then execute the following commands to perform testing:
 
 ```bash
 dropdb trivia_test
