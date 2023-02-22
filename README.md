@@ -12,9 +12,9 @@ Please refer to readme files in the frontend and backend folders to get more det
 
 * Git-clone this project (or download and extract a zip file) into a separate folder.
 
-* Proceed to the `backend` folder to install dependencies and launch the backend server. The details can be found in the readme file inside the folder.
+* Proceed to the `/backend` folder to install dependencies and launch the backend server. The details can be found in the readme file inside the folder.
 
-* Proceed to the `frontend` folder to install dependencies and launch the React development server. The details can be found in the readme file inside the folder.
+* Proceed to the `/frontend` folder to install dependencies and launch the React development server. The details can be found in the readme file inside the folder.
 
 * Open http://localhost:3000/ in your browser to run Trivia App.
 
