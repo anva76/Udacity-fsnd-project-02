@@ -15,11 +15,6 @@ with app.app_context():
     db.create_all()
 
 
-# 'Server error' side effect for unittest.mock
-def abort_500_side_effect():
-    abort(500)
-
-
 class TestTrivia(TestCase):
 
     def setUp(self):
