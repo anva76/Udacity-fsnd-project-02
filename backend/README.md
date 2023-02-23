@@ -8,7 +8,7 @@
 
 * **Virtual Environment** - It is recommended to use a python virtual environment for running the backend Flask code. Instructions for setting up a virual environment for your platform can be found in the [python docs](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/)
 
-* **PostgreSQL Server** - For this project, a connection to a running PostgreSQL server is required. The simplest scenario is to run the seriver locally. Please refer to the [PostgreSQL administration docs](https://www.postgresql.org/docs/current/admin.html) and [install](https://www.postgresql.org/download/) a relevant binary package for your platform.
+* **PostgreSQL Server** - For this project, a connection to a running PostgreSQL server is required. The simplest scenario is to run the server locally. Please refer to the [PostgreSQL administration docs](https://www.postgresql.org/docs/current/admin.html) and [install](https://www.postgresql.org/download/) a relevant binary package for your platform.
 
 ### Installing PIP Dependencies
 
@@ -46,7 +46,16 @@ psql trivia < trivia.psql
 
 Before running the backend server, please ensure that you are in the `/backend` folder and your virtual environment is activated as described above.
 
-Change the `SQLALCHEMY_DATABASE_URI` parameter in the `config.py` file depending on your local PostreSQL configuration. To run the backend Flask server, execute:
+The backend application loads its secrets as environment variables from an `.env` file. Please create one in the `/backend` folder as shown in the following example:
+
+```bash
+DB_HOST=your_db_host
+DB_USER=your_db_user
+DB_PASSWORD=your_password
+DB_NAME=postgre_database_name
+TEST_DB_NAME=postgre_test_database_name
+```
+To run the backend Flask server, execute:
 
 ```bash
 python app.py
@@ -284,7 +293,9 @@ If an API request is successful, a `success` indicator equal to `true` as well a
 
 In your terminal, navigate to the `/backend` folder and activate your virtual environment as described above.
 
-Change the `SQLALCHEMY_DATABASE_URI` parameter in the `test_app.py` file depending on your local PostreSQL configuration. Then execute the following commands to perform testing:
+The backend application loads its secrets as environment variables from an `.env` file. Please create one in the `/backend` folder as shown above.
+
+Finally, execute the following commands to perform testing:
 
 ```bash
 dropdb trivia_test

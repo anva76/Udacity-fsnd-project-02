@@ -1,13 +1,21 @@
+import sys
+import random
 from flask import Flask, jsonify, request, abort
 from models import db, Category, Question, create_tables
 from flask_cors import CORS
 from sqlalchemy import func as fn
-import random
 
 ITEMS_PER_PAGE = 10
 
 app = Flask(__name__)
 CORS(app)
+
+
+def apply_config_and_setup_db():
+    app.config.from_object('config.DevelopmentConfig')
+    db.init_app(app)
+    with app.app_context():
+        create_tables()
 
 
 @app.after_request
@@ -341,8 +349,8 @@ def get_next_question():
         ]
     else:
         category = Category.query.filter(
-                Category.id == category_id
-             ).one_or_none()
+                   Category.id == category_id
+                  ).one_or_none()
         if category is None:
             return error_response('Category not found', 404)
 
@@ -362,7 +370,9 @@ def get_next_question():
 
     if len(next_question_pool) != 0:
         question_id = random.choice(list(next_question_pool))
-        question = (Question.query.filter(Question.id == question_id).one()).format()
+        question = Question.query.filter(
+                        Question.id == question_id
+                   ).one().format()
     else:
         question = None
 
@@ -411,8 +421,5 @@ def unprocessable_entity(error):
 
 
 if __name__ == '__main__':
-    app.config.from_object('config')
-    db.init_app(app)
-    with app.app_context():
-        create_tables()
+    apply_config_and_setup_db()
     app.run()
